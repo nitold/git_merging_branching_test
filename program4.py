@@ -35,8 +35,8 @@ def main():
           F.col("a.mgrid")==F.col("b.empid"),"leftouter")\
     .select(F.col("a.*"), F.col("b.name").alias("manager_name"))
 
-  
-     df2 = df1.select("*").agg(F.col("mgr_id"))
+    df2 = df1.select("*").agg(F.col("mgr_id")).select("*").take(1)
+
 
     df1.withColumn("total_salary", F.sum(F.col("salary")).over(Window.partitionBy(F.col("manager_name"))))\
     .withColumn("rownum", F.row_number().over(Window.orderBy(F.col("total_salary").desc())))\
