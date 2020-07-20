@@ -35,13 +35,15 @@ def main():
           F.col("a.mgrid")==F.col("b.empid"),"leftouter")\
     .select(F.col("a.*"), F.col("b.name").alias("manager_name"))
 
+  
+     df2 = df1.select("*").agg(F.col("mgr_id"))
 
     df1.withColumn("total_salary", F.sum(F.col("salary")).over(Window.partitionBy(F.col("manager_name"))))\
     .withColumn("rownum", F.row_number().over(Window.orderBy(F.col("total_salary").desc())))\
      .filter(F.col("rownum")==1).select("mgrid","manager_name").show()
 
     df1.groupBy(F.col("mgrid")).agg(F.max(F.col("salary")).alias("max_sal")).filter(F.col("mgrid").isNotNull())\
-        .select("mgrid","max_sal").show()
+        .select("mgrid","max_sal").collect()
 
 if __name__ == '__main__':
     main()
